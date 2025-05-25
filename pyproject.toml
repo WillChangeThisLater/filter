@@ -1,0 +1,25 @@
+[project]
+name = "refine"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "WillChangeThisLater", email = "paulwendt567@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "aiobotocore>=2.22.0",
+    "aiofiles>=24.1.0",
+    "anthropic[bedrock]>=0.52.0",
+    "atlassian-python-api>=4.0.4",
+    "instructor>=1.8.3",
+    "pillow>=11.2.1",
+    "pydantic>=2.11.5",
+]
+
+[project.scripts]
+refine = "refine:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
