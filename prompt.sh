@@ -53,10 +53,8 @@ main() {
   cat <<EOF
 $(about)
 
-Is 'refine' the right name for this project?
-
-References:
-$(references)
+Fix the error:
+$(run uv run refine --input uris "painting")
 
 EOF
 }
@@ -64,3 +62,57 @@ EOF
 main
 
 #
+#
+#\`\`\`python
+#from openai import OpenAI
+#from pydantic import BaseModel
+#
+#client = OpenAI()
+#
+#class CalendarEvent(BaseModel):
+#    name: str
+#    date: str
+#    participants: list[str]
+#
+#response = client.responses.parse(
+#    model="gpt-4o-mini",
+#    input=[
+#        {"role": "system", "content": "Extract the event information."},
+#        {
+#            "role": "user",
+#            "content": "Alice and Bob are going to a science fair on Friday.",
+#        },
+#    ],
+#    text_format=CalendarEvent,
+#)
+#
+#event = response.output_parsed
+#\`\`\`
+#
+#Make sure the code you write can handle images as well! See below for reference -
+#that 'image_url' can be a base64 encoded string, which is what we will want
+#for transmitting local images
+#
+#\`\`\`python
+#from openai import OpenAI
+#
+#client = OpenAI()
+#
+#response = client.responses.create(
+#    model="gpt-4.1",
+#    input=[
+#        {
+#            "role": "user",
+#            "content": [
+#                { "type": "input_text", "text": "what is in this image?" },
+#                {
+#                    "type": "input_image",
+#                    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg"
+#                }
+#            ]
+#        }
+#    ]
+#)
+#
+#print(response)
+#\`\`\`

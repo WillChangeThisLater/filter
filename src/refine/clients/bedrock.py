@@ -9,9 +9,10 @@ from PIL import Image
 from typing import Union
 
 from refine.decorators import retry
+from refine.clients.base import BaseLLMClient
 logger = logging.getLogger(__name__)
 
-class BedrockClient:
+class BedrockClient(BaseLLMClient):
 
     # Make the bedrock client a Singleton
     _instance = None

@@ -13,6 +13,7 @@ dependencies = [
     "anthropic[bedrock]>=0.52.0",
     "atlassian-python-api>=4.0.4",
     "instructor>=1.8.3",
+    "openai>=1.82.0",
     "pillow>=11.2.1",
     "pydantic>=2.11.5",
 ]
