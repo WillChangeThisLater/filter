@@ -4,6 +4,7 @@ import asyncio
 import httpx
 import logging
 import os
+import random
 import sys
 from urllib.parse import urlparse, urlsplit, parse_qs
 
@@ -90,23 +91,40 @@ async def text_is_relevant(client: BaseLLMClient, text: str, query: str) -> bool
     results = await asyncio.gather(*tasks)
     return any(results)
 
-async def url_is_relevant(client: BaseLLMClient, uri: str, query: str) -> bool:
-
-    split_url = urlsplit(uri)
-    base_url = f"{split_url.scheme}://{split_url.netloc}{split_url.path}"
-    query_params = parse_qs(split_url.query)
+async def url_is_relevant(client, uri: str, query: str) -> bool:
     async with httpx.AsyncClient() as httpx_client:
-        try:
-            response = await httpx_client.get(base_url, params=query_params, follow_redirects=True)
-            response.raise_for_status()  # This will handle HTTP errors if not 200
-            relevant = await text_is_relevant(client, response.text, query)
-            return relevant
-        except httpx.HTTPStatusError as ex:
-            logger.error(f"HTTP error occurred: {ex}")
-            return False
-        except httpx.RequestError as ex:
-            logger.error(f"Request error occurred: {ex}")
-            return False
+        max_retries = 3
+        backoff_factor = 0.5  # Base factor for exponential backoff
+
+        for attempt in range(max_retries):
+            split_url = urlsplit(uri)
+            base_url = f"{split_url.scheme}://{split_url.netloc}{split_url.path}"
+            query_params = parse_qs(split_url.query)
+
+            try:
+                response = await httpx_client.get(base_url, params=query_params, follow_redirects=True)
+                response.raise_for_status()  # This will raise an exception for HTTP errors
+
+                # Process the response if successful
+                relevant = await text_is_relevant(client, response.text, query)
+                return relevant
+            except httpx.HTTPStatusError as ex:
+                if ex.response.status_code in (403, 503):
+                    logger.warning(f"Attempt {attempt + 1}: HTTP error occurred: {ex}, retrying...")
+
+                    # Add jitter to our backoff calculation
+                    jitter = random.uniform(0, 0.1)  # Adjust the 0.1 to set maximum jitter time
+                    wait_time = backoff_factor * (2 ** attempt) + jitter
+                    await asyncio.sleep(wait_time)
+                else:
+                    logger.error(f"HTTPStatusError: {ex}")
+                    return False
+            except httpx.RequestError as ex:
+                logger.error(f"Request error occurred: {ex}")
+                return False
+
+        logger.error(f"All {max_retries} attempts failed for URL: {uri}.")
+        return False
 
 async def text_file_is_relevant(client: BaseLLMClient, file_name: str, query: str) -> bool:
     async with aiofiles.open(file_name, mode="r", encoding="utf-8", errors="ignore") as fp:
