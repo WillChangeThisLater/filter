@@ -53,10 +53,28 @@ main() {
   cat <<EOF
 $(about)
 
-Add a --literal option. When applied,
---literal will run the classifier over each URI
-directly (instead of trying to process the link
-before summarizing it)
+'filter' works, but it can hit intermittent 403 and 503 errors.
+Add retries to the script (GET requests should retry up to N times
+with exponential backoff. N should default to 3)
+
+\`\`\`bash
+$ crawl -s -d 1 https://www.hackernews.com/ | grep "item?id" | filter "Related to AI, LLMs, Bash scripting, or Python/Go" --concurrency 2
+HTTP error occurred: Client error '403 Forbidden' for url 'https://news.ycombinator.com/item?id=44098579'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403
+HTTP error occurred: Client error '403 Forbidden' for url 'https://news.ycombinator.com/item?id=44097637'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403
+HTTP error occurred: Server error '503 Service Temporarily Unavailable' for url 'https://news.ycombinator.com/item?id=44074775'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503
+https://news.ycombinator.com/item?id=44098706
+https://news.ycombinator.com/item?id=44099187
+https://news.ycombinator.com/item?id=44096395
+https://news.ycombinator.com/item?id=44098772
+https://news.ycombinator.com/item?id=44096251
+https://news.ycombinator.com/item?id=44097490
+https://news.ycombinator.com/item?id=44093334
+https://news.ycombinator.com/item?id=44095608
+https://news.ycombinator.com/item?id=44070626
+\`\`\`
 
 EOF
 }
