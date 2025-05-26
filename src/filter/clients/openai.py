@@ -7,8 +7,8 @@ import base64
 from typing import Union
 from pydantic import BaseModel
 
-from refine.decorators import retry
-from refine.clients.base import BaseLLMClient
+from filter.decorators import retry
+from filter.clients.base import BaseLLMClient
 
 logger = logging.getLogger(__name__)
 

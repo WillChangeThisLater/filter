@@ -1,5 +1,5 @@
 [project]
-name = "refine"
+name = "filter"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -19,7 +19,7 @@ dependencies = [
 ]
 
 [project.scripts]
-refine = "refine:main"
+filter = "filter:main"
 
 [build-system]
 requires = ["hatchling"]

@@ -8,9 +8,9 @@ import sys
 from urllib.parse import urlparse
 
 from atlassian import Confluence, Jira
-from refine.clients.base import BaseLLMClient
-from refine.clients.openai import OpenAIClient
-from refine.clients.bedrock import BedrockClient
+from filter.clients.base import BaseLLMClient
+from filter.clients.openai import OpenAIClient
+from filter.clients.bedrock import BedrockClient
 from PIL import Image
 
 logger = logging.getLogger(__name__)

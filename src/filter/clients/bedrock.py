@@ -8,8 +8,8 @@ from itertools import batched
 from PIL import Image
 from typing import Union
 
-from refine.decorators import retry
-from refine.clients.base import BaseLLMClient
+from filter.decorators import retry
+from filter.clients.base import BaseLLMClient
 logger = logging.getLogger(__name__)
 
 class BedrockClient(BaseLLMClient):
