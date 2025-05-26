@@ -5,7 +5,7 @@ import httpx
 import logging
 import os
 import sys
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlsplit, parse_qs
 
 from atlassian import Confluence, Jira
 from filter.clients.base import BaseLLMClient
@@ -91,9 +91,13 @@ async def text_is_relevant(client: BaseLLMClient, text: str, query: str) -> bool
     return any(results)
 
 async def url_is_relevant(client: BaseLLMClient, uri: str, query: str) -> bool:
+
+    split_url = urlsplit(uri)
+    base_url = f"{split_url.scheme}://{split_url.netloc}{split_url.path}"
+    query_params = parse_qs(split_url.query)
     async with httpx.AsyncClient() as httpx_client:
         try:
-            response = await httpx_client.get(uri, follow_redirects=True)
+            response = await httpx_client.get(base_url, params=query_params, follow_redirects=True)
             response.raise_for_status()  # This will handle HTTP errors if not 200
             relevant = await text_is_relevant(client, response.text, query)
             return relevant
@@ -130,11 +134,23 @@ async def uri_is_relevant(client: BaseLLMClient, uri: str, query: str) -> bool:
         return await text_file_is_relevant(client, uri, query)
 
 
+
+async def handle_uri_semaphore(semaphore: asyncio.Semaphore, client: BaseLLMClient, uri: str, query: str, literal: bool = False) -> tuple[str, bool]:
+    async with semaphore:
+        if literal:
+            is_relevant = await text_is_relevant(client, uri, query)
+        else:
+            is_relevant = await uri_is_relevant(client, uri, query)
+
+        return uri, is_relevant
+
 async def cli():
     parser = argparse.ArgumentParser(description="CLI tool to determine relevance of URIs.")
     parser.add_argument('query', type=str, help="Relevance query to be used")
     parser.add_argument('--input', type=str, help="Optional file path containing URIs")
     parser.add_argument('--provider', type=str, default="openai", help="LLM client provider")
+    parser.add_argument('--concurrency', type=int, default=10, help="Number of concurrent URIs to process")
+    parser.add_argument('--literal', action="store_true", help="Classify URI itself (without processing contents)")
 
     args = parser.parse_args()
 
@@ -150,11 +166,12 @@ async def cli():
     else:
         raise NotImplementedError(f"Error - client {args.client} is not implemented")
 
-    tasks = [uri_is_relevant(client, uri, args.query) for uri in uris]
+    semaphore = asyncio.Semaphore(args.concurrency)
+    tasks = [handle_uri_semaphore(semaphore, client, uri, args.query, args.literal) for uri in uris]
     results = await asyncio.gather(*tasks)
 
     # Print relevant URIs
-    for uri, is_relevant in zip(uris, results):
+    for uri, is_relevant in results:
         if is_relevant:
             print(uri)
 

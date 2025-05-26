@@ -53,6 +53,10 @@ main() {
   cat <<EOF
 $(about)
 
+Add a --literal option. When applied,
+--literal will run the classifier over each URI
+directly (instead of trying to process the link
+before summarizing it)
 
 EOF
 }

@@ -50,6 +50,7 @@ dependencies = [
     { name = "propcache" },
     { name = "yarl" },
 ]
+sdist = { url = "https://files.pythonhosted.org/packages/6a/61/d37b33a074ad867d1ecec9f03183e2b9fee067745cae17e73c264f556d57/aiohttp-3.12.0.tar.gz", hash = "sha256:e3f0a2b4d7fb16c0d584d9b8860f1e46d39f7d93372b25a6f80c10015a7acdab", size = 7762804 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/fd/7e/9d27424fadc63f89d9165e7865ecdcf49bd4ce03ed5f453e8fb1300c3ede/aiohttp-3.12.0-cp313-cp313-macosx_10_13_universal2.whl", hash = "sha256:6ab223f5d0bd30f1b419addc4aef37f8d7723027e3d92393281cba97f8529209", size = 682843 },
     { url = "https://files.pythonhosted.org/packages/9d/7e/d8f3b2efbd359138f81121d849c334b6df4bb91805a4e7380f175ea822cf/aiohttp-3.12.0-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:c5beab804eeff85cfae5c053e0d3bb7a7cdc2756ced50a586c56deb8b8ce16b9", size = 460508 },
@@ -285,6 +286,35 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/08/12/9c22a58c0b1e29271051222d8906257616da84135af9ed167c9e28f85cb3/docstring_parser-0.16.tar.gz", hash = "sha256:538beabd0af1e2db0146b6bd3caa526c35a34d61af9fd2887f3a8a27a739aa6e", size = 26565 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/d5/7c/e9fcff7623954d86bdc17782036cbf715ecab1bec4847c008557affe1ca8/docstring_parser-0.16-py3-none-any.whl", hash = "sha256:bf0a1387354d3691d102edef7ec124f219ef639982d096e26e3b60aeffa90637", size = 36533 },
+]
+
+[[package]]
+name = "filter"
+version = "0.1.0"
+source = { editable = "." }
+dependencies = [
+    { name = "aiobotocore" },
+    { name = "aiofiles" },
+    { name = "anthropic", extra = ["bedrock"] },
+    { name = "atlassian-python-api" },
+    { name = "instructor" },
+    { name = "openai" },
+    { name = "pillow" },
+    { name = "pydantic" },
+    { name = "rpdb" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "aiobotocore", specifier = ">=2.22.0" },
+    { name = "aiofiles", specifier = ">=24.1.0" },
+    { name = "anthropic", extras = ["bedrock"], specifier = ">=0.52.0" },
+    { name = "atlassian-python-api", specifier = ">=4.0.4" },
+    { name = "instructor", specifier = ">=1.8.3" },
+    { name = "openai", specifier = ">=1.82.0" },
+    { name = "pillow", specifier = ">=11.2.1" },
+    { name = "pydantic", specifier = ">=2.11.5" },
+    { name = "rpdb", specifier = ">=0.2.0" },
 ]
 
 [[package]]
@@ -698,33 +728,6 @@ wheels = [
 ]
 
 [[package]]
-name = "filter"
-version = "0.1.0"
-source = { editable = "." }
-dependencies = [
-    { name = "aiobotocore" },
-    { name = "aiofiles" },
-    { name = "anthropic", extra = ["bedrock"] },
-    { name = "atlassian-python-api" },
-    { name = "instructor" },
-    { name = "openai" },
-    { name = "pillow" },
-    { name = "pydantic" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "aiobotocore", specifier = ">=2.22.0" },
-    { name = "aiofiles", specifier = ">=24.1.0" },
-    { name = "anthropic", extras = ["bedrock"], specifier = ">=0.52.0" },
-    { name = "atlassian-python-api", specifier = ">=4.0.4" },
-    { name = "instructor", specifier = ">=1.8.3" },
-    { name = "openai", specifier = ">=1.82.0" },
-    { name = "pillow", specifier = ">=11.2.1" },
-    { name = "pydantic", specifier = ">=2.11.5" },
-]
-
-[[package]]
 name = "requests"
 version = "2.32.3"
 source = { registry = "https://pypi.org/simple" }
@@ -763,6 +766,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/ab/3a/0316b28d0761c6734d6bc14e770d85506c986c85ffb239e688eeaab2c2bc/rich-13.9.4.tar.gz", hash = "sha256:439594978a49a09530cff7ebc4b5c7103ef57baf48d5ea3184f21d9a2befa098", size = 223149 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/19/71/39c7c0d87f8d4e6c020a393182060eaefeeae6c01dab6a84ec346f2567df/rich-13.9.4-py3-none-any.whl", hash = "sha256:6049d5e6ec054bf2779ab3358186963bac2ea89175919d699e378b99738c2a90", size = 242424 },
+]
+
+[[package]]
+name = "rpdb"
+version = "0.2.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/0f/87/2dc67e3d5a005173b2e4165bdfdeb302ef38393b16312afe70f7a252f3ae/rpdb-0.2.0.tar.gz", hash = "sha256:8346f0dd498a1c30768af3d3528cdfe8086d8c057c9fccb5430b5aec32ae16ab", size = 5560 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/56/dd/39ee98f8fc0163f4df6264525fff2b87eef4b3d1a48db5936261e029ba15/rpdb-0.2.0-py3-none-any.whl", hash = "sha256:20e59ed87bbc0ec6a89ea883d8620f26c6e0877b851a49e19c239ad2c6bd4f49", size = 5985 },
 ]
 
 [[package]]
