@@ -53,66 +53,43 @@ main() {
   cat <<EOF
 $(about)
 
-Fix the error:
-$(run uv run refine --input uris "painting")
+Fix the error. In these sort of cases it's fine to the code to just log out an
+error and return False
+
+\`\`\`python
+Traceback (most recent call last):
+  File "/root/.local/bin/refine", line 10, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/root/.local/share/uv/tools/refine/lib/python3.13/site-packages/refine/main.py", line 152, in main
+    asyncio.run(cli())
+    ~~~~~~~~~~~^^^^^^^
+  File "/usr/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/usr/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/usr/lib/python3.13/asyncio/base_events.py", line 719, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/root/.local/share/uv/tools/refine/lib/python3.13/site-packages/refine/main.py", line 144, in cli
+    results = await asyncio.gather(*tasks)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/.local/share/uv/tools/refine/lib/python3.13/site-packages/refine/main.py", line 114, in uri_is_relevant
+    return await url_is_relevant(client, uri, query)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/.local/share/uv/tools/refine/lib/python3.13/site-packages/refine/main.py", line 93, in url_is_relevant
+    response.raise_for_status()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/root/.local/share/uv/tools/refine/lib/python3.13/site-packages/httpx/_models.py", line 829, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Redirect response '301 Moved Permanently' for url 'https://jvns.ca/newsletter'
+Redirect location: '/newsletter/'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/301
+\`\`\`
 
 EOF
 }
 
 main
-
-#
-#
-#\`\`\`python
-#from openai import OpenAI
-#from pydantic import BaseModel
-#
-#client = OpenAI()
-#
-#class CalendarEvent(BaseModel):
-#    name: str
-#    date: str
-#    participants: list[str]
-#
-#response = client.responses.parse(
-#    model="gpt-4o-mini",
-#    input=[
-#        {"role": "system", "content": "Extract the event information."},
-#        {
-#            "role": "user",
-#            "content": "Alice and Bob are going to a science fair on Friday.",
-#        },
-#    ],
-#    text_format=CalendarEvent,
-#)
-#
-#event = response.output_parsed
-#\`\`\`
-#
-#Make sure the code you write can handle images as well! See below for reference -
-#that 'image_url' can be a base64 encoded string, which is what we will want
-#for transmitting local images
-#
-#\`\`\`python
-#from openai import OpenAI
-#
-#client = OpenAI()
-#
-#response = client.responses.create(
-#    model="gpt-4.1",
-#    input=[
-#        {
-#            "role": "user",
-#            "content": [
-#                { "type": "input_text", "text": "what is in this image?" },
-#                {
-#                    "type": "input_image",
-#                    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg"
-#                }
-#            ]
-#        }
-#    ]
-#)
-#
-#print(response)
-#\`\`\`

@@ -2,6 +2,7 @@ import aiofiles
 import argparse
 import asyncio
 import httpx
+import logging
 import os
 import sys
 from urllib.parse import urlparse
@@ -11,6 +12,8 @@ from refine.clients.base import BaseLLMClient
 from refine.clients.openai import OpenAIClient
 from refine.clients.bedrock import BedrockClient
 from PIL import Image
+
+logger = logging.getLogger(__name__)
 
 
 async def atlassian_is_relevant(client: BaseLLMClient, uri: str, query: str) -> bool:
@@ -89,10 +92,17 @@ async def text_is_relevant(client: BaseLLMClient, text: str, query: str) -> bool
 
 async def url_is_relevant(client: BaseLLMClient, uri: str, query: str) -> bool:
     async with httpx.AsyncClient() as httpx_client:
-        response = await httpx_client.get(uri)
-        response.raise_for_status()
-        relevant = await text_is_relevant(client, response.text, query)
-    return relevant
+        try:
+            response = await httpx_client.get(uri, follow_redirects=True)
+            response.raise_for_status()  # This will handle HTTP errors if not 200
+            relevant = await text_is_relevant(client, response.text, query)
+            return relevant
+        except httpx.HTTPStatusError as ex:
+            logger.error(f"HTTP error occurred: {ex}")
+            return False
+        except httpx.RequestError as ex:
+            logger.error(f"Request error occurred: {ex}")
+            return False
 
 async def text_file_is_relevant(client: BaseLLMClient, file_name: str, query: str) -> bool:
     async with aiofiles.open(file_name, mode="r", encoding="utf-8", errors="ignore") as fp:
